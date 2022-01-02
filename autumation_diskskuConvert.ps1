@@ -1,4 +1,3 @@
-﻿
 Set-AzContext -Subscription "" #Set Subcription to 
 
 Connect-AzAccount -Tenant 'XX' -SubscriptionId 'YY'
@@ -30,8 +29,8 @@ $disk | ForEach-Object{
                #Is VMname matches with out disk VM and is the state is deallocated
                if($_.Name -eq $VMname -and $_.PowerState -eq "VM deallocated"){
                     #Update the disk to standard"
-                    #$storageType = 'Standard_LRS' 
-                    $disktemp.sku = [Microsoft.Azure.Management.Compute.Models.DiskSku]::new('Premium_LRS')
+                    #$storageType = 'Premium_LRS' 
+                    $disktemp.sku = [Microsoft.Azure.Management.Compute.Models.DiskSku]::new('Standard_LRS')
                     $disktemp | Update-AzDisk 
                  
                }
