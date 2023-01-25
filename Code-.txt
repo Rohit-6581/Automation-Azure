@@ -1,0 +1,31 @@
+$file = "D:\SoC\SKU_Price_Comparison\Sku_Price_Sheet.xlsx"
+$excel = New-Object -com Excel.Application
+$wb = $excel.workbooks.open($file)
+
+$sheet = $wb.Worksheets.Item(1) 
+$rowMax = ($sheet.UsedRange.Rows).Count
+$SKU_ROW = $sheet.Cells.Find('SKU')
+
+for($i=2;$i -le $rowMax ;$i++){
+    $sku = $SKU_ROW.Cells.Item($i).Text
+    $metersku = $sku.Replace('Standard_','')
+    
+    $m= Invoke-RestMethod -Uri "https://prices.azure.com/api/retail/prices?%24filter=serviceName eq 'Virtual Machines' and priceType eq 'Consumption' and armRegionName eq 'centralus' and armSkuName eq '$sku' and meterName eq '$metersku'"
+    $m.Items | ForEach-Object{
+        $_.armSkuName
+        $windows = [string]$_.productName
+        if ($windows.Contains("Windows")){
+             $sheet.Cells.Item($i,2) = [string]($_.retailPrice*730)
+            # $_.retailPrice + "Without Ahub"
+        }else{
+        #add to column 3
+        $sheet.Cells.Item($i,3) = [string]($_.retailPrice*730)
+            #Write-Host $_.retailPrice + "With Ahub"
+        }
+    }
+ }
+
+$wb.Save()
+$wb.close()
+
+
